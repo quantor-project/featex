@@ -1,0 +1,12 @@
+\w*annually
+\w*weekly
+ago
+always
+daily
+finally
+first
+last
+later
+never
+often
+since

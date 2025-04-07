@@ -1,0 +1,16 @@
+.+ships?
+.{3,}(a|e)nces?
+.{3,}isms?
+.{3,}it(y|ies)
+.{3,}ness(es)?
+.{4,}(t|ss)ions?
+.{4,}ages?
+.{4,}als?
+.{4,}c(y|ies)
+.{4,}doms?
+.{4,}er(y|ies|s)?
+.{4,}ings?
+.{4,}ists?
+.{4,}ments?
+.{4,}ou?rs?
+.{4,}ures?

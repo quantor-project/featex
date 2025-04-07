@@ -1,0 +1,777 @@
+---
+title: Feature Extraction
+mode: CQP
+---
+
+# Feature Extraction
+
+## Initialization
+
+Load helper macros and run `/init[...]`, which takes in one argument (the name of an s-
+attribute) to define the subcorpus to query. The corresponding value for this s-attribute
+is output alongside each span/hit count.
+
+The macro creates a Named Query Result (NQR) with the name `Corpus`,
+which should be re-activated after using a subquery.
+
+```cqp
+define macro < "macros/featex.m";
+/init[text_id];
+```
+
+The `/union[...]` and `/diff[...]` macros create a set union or difference of the provided
+NQRs and save the result in the name of the first argument.
+
+The `/feature[...]` and `feature_count[...]` macros take in a NQR and output a header with its name,
+followed by a table of spans/hit counts for the s-attribute specified in `/init[...]`.
+
+## Basic Counts
+
+### Sentences
+
+**Query**: s-attribute `s` (given by markup).
+
+```cqp
+Sentences = [] expand to s;
+/feature_count[Sentences];
+```
+
+### Actual Words
+
+**Query**: alphanumeric part-of-speech tags (excludes punctation).
+
+```cqp
+Words = [pos="\w+"];
+/feature_count[Words];
+```
+
+### Content Words
+
+**Query**: all nouns (N), verbs (V), adjectives (J), and adverbs (R).
+
+TODO: exclude auxiliaries
+
+```cqp
+ContentWords = [pos="[NJVR].+" & pos!="RP|VMK?"];
+/feature_count[ContentWords];
+```
+
+### Noun-based features
+
+#### Common Nouns
+
+```cqp
+CommonNouns = [pos="NN[ABLOTU]?[12]?|ND1"];
+/feature_count[CommonNouns];
+```
+
+#### Proper Nouns
+
+```cqp
+ProperNouns = [pos="NP[DM]?[12]"];
+/feature_count[ProperNouns];
+```
+
+#### Nominalizations
+
+**Definition**: nouns created from adjectives or verbs through *derivation*.
+**Query**: a positive wordlist of common nominalizing suffixes in combination with a negative wordlist to exclude certain high frequency false positives.
+
+```cqp
+define $NotNominalizedWords < "wordlists/nouns/NotNominalizedWords.txt";
+define $NominalizingSuffixes < "wordlists/nouns/NominalizingSuffixes.txt";
+Nominalizations = [pos="NN.+" & word=RE($NominalizingSuffixes)%c & word!=RE($NotNominalizedWords)%c];
+/feature[Nominalizations];
+```
+
+#### Neoclassical Compounds
+
+**Definition**: words composed of affixes and stems from classical Latin or ancient Greek.
+**Query**: a positive wordlist of common neoclassical affixes in combination with a negative wordlist to exclude certain high frequency false positives.
+
+```cqp
+define $NotNeoclassicalWords < "wordlists/nouns/NotNeoclassicalWords.txt";
+define $NeoclassicalAffixes < "wordlists/nouns/NeoclassicalAffixes.txt";
+NeoclassicalCompounds = [pos!="NP" & word=RE($NeoclassicalAffixes)%c & word!=RE($NotNeoclassicalWords)%c];
+/feature[NeoclassicalCompounds];
+```
+
+### Pronouns
+
+```cqp
+AllPronouns = [pos="P.+"];
+/feature_count[AllPronouns];
+```
+
+#### Personal Pronouns
+
+TODO: differentiate subjective and objective *you*/*it*
+
+```cqp
+# special case for lowercase `I`, which CLAWS consistently mistakes for ZZ1 and MC1
+PronounI = [(pos="PPIS1" & word="I"%c) | word="I"%c];
+PronounWe = [pos="PPIS2" & word="we"%c];
+
+/feature_count[PronounI];
+/feature_count[PronounWe];
+
+PronounMe = [pos="PPIO1" & word="me"%c];
+PronounUs = [pos="PPIO2" & word="us"%c];
+
+/feature_count[PronounMe];
+/feature_count[PronounUs];
+
+PronounYou = [pos="PPY"];
+/feature_count[PronounYou];
+
+PronounHe = [pos="PPHS1" & word="he"%c];
+PronounShe = [pos="PPHS1" & word="she"%c];
+PronounIt = [word="it"%c];
+PronounThey = [pos="PPHS2"];
+
+/feature_count[PronounHe];
+/feature_count[PronounShe];
+/feature_count[PronounIt];
+/feature_count[PronounThey];
+
+PronounHim = [pos="PPHO1" & word="him"%c];
+PronounHer = [pos="PPHO1" & word="her"%c];
+PronounThem = [pos="PPHO2"];
+
+/feature_count[PronounHim];
+/feature_count[PronounHer];
+/feature_count[PronounThem];
+```
+
+#### Possessive Pronouns
+
+TODO: *its* is never tagged as PPGE
+
+```cqp
+PronounMine = [pos="PPGE" & word="mine"%c];
+PronounOurs = [pos="PPGE" & word="ours"%c];
+
+/feature_count[PronounMine];
+/feature_count[PronounOurs];
+
+PronounYours = [pos="PPGE" & word="yours"%c];
+
+/feature_count[PronounYours];
+
+PronounHis = [pos="PPGE" & word="his"%c];
+PronounHers = [pos="PPGE" & word="hers"%c];
+PronounIts = [pos="PPGE" & word="its"%c];
+PronounTheirs = [pos="PPGE" & word="theirs"%c];
+
+/feature_count[PronounHis];
+/feature_count[PronounHers];
+/feature_count[PronounIts];
+/feature_count[PronounTheirs];
+```
+
+#### Reflexive Pronouns
+
+```cqp
+PronounMyself = [pos="PPX1" & word="myself"%c];
+PronounOurselves = [pos="PPX2" & word="ourselves"%c];
+
+/feature_count[PronounMyself];
+/feature_count[PronounOurselves];
+
+PronounYourself = [pos="PPX1" & word="yourself"%c];
+PronounYourselves = [pos="PPX2" & word="yourselves"%c];
+
+/feature_count[PronounYourself];
+/feature_count[PronounYourselves];
+
+PronounHimself = [pos="PPX1" & word="himself"%c];
+PronounHerself = [pos="PPX1" & word="herself"%c];
+PronounItself = [pos="PPX1" & word="itself"%c];
+PronounThemselves = [pos="PPX2" & word="themselves"%c];
+
+/feature_count[PronounHimself];
+/feature_count[PronounHerself];
+/feature_count[PronounItself];
+/feature_count[PronounThemselves];
+
+PronounReflexiveIndefinite = [pos="PNX1"];
+/feature_count[PronounReflexiveIndefinite];
+```
+
+### Determiners
+
+TODO: split these up further?
+
+```cqp
+Articles = [pos="AT1?"];
+/feature_count[Articles];
+
+WhDeterminers = [pos="DDQ(V|GE)"];
+/feature_count[WhDeterminers];
+
+PreDeterminers = [pos="DB2?"];
+/feature_count[PreDeterminers];
+
+PostDeterminers = [pos="DA[12RT]"];
+/feature_count[PostDeterminers];
+
+PossessiveDeterminers = [pos="APPGE"];
+/feature_count[PossessiveDeterminers];
+
+OtherDeterminers = [pos="DD[12]?" & word!="this|these|that|those"%c];
+/feature_count[OtherDeterminers];
+```
+
+### Demonstratives
+
+**Query**:
+
+1. **Demonstrative Determiners**: *this*, *these*, *that*, or *those* followed by a noun (N) or adjective (J)
+2. **Demonstrative Pronouns**: all other instances of *this*, *these*, *that*, and *those*
+
+```cqp
+Demonstratives = [pos="DD[12]" & word="this|these|that|those"%c];
+DemonstrativeDeterminers = [pos="DD[12]" & word="this|these|that|those"%c] np:[::] :: np -> np.pos = "[NJ].+" within s;
+/feature[DemonstrativeDeterminers];
+
+/diff[DemonstrativePronouns, Demonstratives, DemonstrativeDeterminers];
+/feature[DemonstrativePronouns];
+```
+
+### Adjectives
+
+Cases (Quirk et al. 2010: 418):
+
+1. Attributive: "*useful* information"
+2. Postpositive: "something *useful*"
+3. Predicative: "This information is *useful*."
+
+```cqp
+AllAdjectives = [pos="J.+"];
+/feature_count[AllAdjectives];
+```
+
+#### Attributive Adjectives
+
+**Definition**: adjectives that "premodify the head of a noun phrase" (Quirk et al. 2010: 417).
+**Query**: first extracts all premodifiers of nouns and then finds the adjectives within.
+
+```cqp
+AttributiveAdjectives = (?longest)(
+    (
+        ([word=","] | [word=","]? [pos="CCB?"])?
+        [pos="R.+"]* [pos="J.+|MD|N.+"]
+    )+
+    [pos="N.+"]+
+) within s;
+AttributiveAdjectives;
+AttributiveAdjectives = [pos="J.+|MD"];
+/feature[AttributiveAdjectives];
+Corpus; # reactivate corpus
+```
+
+#### Postpositive Adjectives
+
+**Definition**: adjectives that "immediately follow the noun or pronoun they modify" (Quirk et al. 2010: 418).
+**Query**:
+
+1. any compound singular indefinite pronoun (PN1) ending in *-body*, *-one*, or *-thing* or a locative adverb (RL) ending in *-where*, followed by an adjective (J)
+e.g., "something *nice*"
+
+1. adjectives ending in *-able* or *-ible* when a noun is modified by a superlative adjecitve, the word *only*, or an ordinal
+e.g., "the best use *possible*"
+
+1. adjectives following a noun with a prepositional phrase or *to*-infinitive as complement
+e.g., "box *full* of chocolate"
+
+1. *proper* in the sense of "strictly defined"
+e.g., "the City of London *proper*"
+
+1. institutionalized expressions (mostly in official designations)
+e.g., "president _elect" and "heir *apparent*"
+
+TODO: add other cases listed in Quirk et al. (2010)
+
+```cqp
+PostpositiveAdjectives1 = [(word=".+(body|one|thing)"%c & pos="PN1") | (word=".+where" & pos="RL")] [pos="J.+"] within s;
+set PostpositiveAdjectives1 match matchend;
+PostpositiveAdjectives2 = [word="only" | pos="JJT" | pos="MD"] [pos="N.+"] [word=".+[ai]ble" & pos="J.+"] within s;
+set PostpositiveAdjectives2 match matchend;
+PostpositiveAdjectives3 = [pos="N.+"] [pos="R.+"]* @[pos="J.+"] [pos="I[FIOW]" | pos="TO"] within s;
+set PostpositiveAdjectives3 match target;
+PostpositiveAdjectives4 = [pos="N.+"] [word="proper"%c] within s;
+set PostpositiveAdjectives4 match matchend;
+PostpositiveAdjectives5 = "president"%c "elect"%c | "heir"%c "apparent"%c;
+set PostpositiveAdjectives5 match matchend;
+
+/union[
+    PostpositiveAdjectives,
+    PostpositiveAdjectives1,
+    PostpositiveAdjectives2,
+    PostpositiveAdjectives3,
+    PostpositiveAdjectives4,
+    PostpositiveAdjectives5
+];
+/feature[PostpositiveAdjectives];
+```
+
+#### Predicative Adjectives
+
+**Definition**: adjectives that "function as subject complement or object complement" (Quirk et al. 2010: 417).
+**Query**: negative query (all adjectives that are not attributive or postpositive).
+
+```cqp
+/diff[PredicativeAdjectives, AllAdjectives, AttributiveAdjectives, PostpositiveAdjectives];
+/feature[PredicativeAdjectives];
+```
+
+### Prepositions
+
+**Query**: based on part-of-speech
+
+```cqp
+Prepositions = [pos="I.+"];
+/feature_count[Prepositions];
+```
+
+### Verbs
+
+TODO: extract verb phrases and then check for features below?
+
+```cqp
+AllVerbs = [pos="V.+"];
+/feature_count[AllVerbs];
+```
+
+#### Finite Verbs
+
+**Definition**: verbs that express either tense or modality.
+**Query**: based on part-of-speech
+
+For normalization of other verb features.
+
+```cqp
+FiniteVerbs = [pos="V.[^ING].?"];
+/feature[FiniteVerbs];
+```
+
+#### Past Verbs
+
+**Query**: past tense verbs plus *used to*
+
+- also counts *used to* not tagged as a modal when preceded by a noun or pronoun
+- includes *I* explicitly because CLAWS tags it incorrectly when not capitalized
+
+```cqp
+PastVerbs = [pos="V.D.?" | (pos="VMK" & word="used"%c)] | [pos="[NP].+" | word="I"%c] "used"%c "to"%c within s;
+/feature[PastVerbs];
+```
+
+#### Future Constructions
+
+**Query**:
+
+- will: a form of *will* as a verb followed by an infinitive with optional negation and adverbs in-between
+- going-to:
+    1. a form of *be* followed by optional negation and adverbs, the phrase *going to*, and an infinitive
+    2. the contractions *gonna* and *I'mma* (plus variations) and an infinitive
+- about-to: a form of *be* followed by optional negation and adverbs, the phrase *about to*, and an infinitive
+
+TODO: is-to futures? (may be too ambiguous)
+
+```cqp
+# use V.+ instead of VM to counteract tagging errors (hopfully unproblematic
+# since the combination of tag, surface form, and infinitive should be unambiguous)
+WillFutures = TAB [pos="V.+" & word="will|'ll|wo|shall|sha"%c] [pos="XX"]? [pos="RR.*"]* [pos="V.I"] within s;
+/feature[WillFutures];
+
+GoingToFutures1 = [pos="VB.+"] [pos="XX"]? [pos="RR.*"]* @[word="going" | pos="VVGK"] [pos="TO"] [pos="V.I"] within s;
+GoingToFutures2 = [word="I'?mm?a"%c | word="gonna"%c] [pos="V.I"];
+/union[GoingToFutures, GoingToFutures1, GoingToFutures2];
+/feature[GoingToFutures];
+
+AboutToFutures = [pos="VB.+"] [pos="XX"]? [pos="RR.*"]* "about"%c [pos="TO"] [pos="V.I"] within s;
+/feature[AboutToFutures];
+```
+
+### Modal Verbs
+
+**Query**: *can*, *would*, *could*, *should*, *may*, *must*, *might* (plus contractions and excluding will)
+
+TODO: have to, be able to, be allowed to, etc.
+
+```cqp
+ModalVerbs = [pos="VM" & word!="will|'ll|wo|shall|sha"%c];
+/feature_count[ModalVerbs];
+```
+
+## Grammatical Structures
+
+### To-Infinitives
+
+**Query**: the word *to* followed by an infinitive (with optional adverbs in-between).
+
+```cqp
+ToInfinitives = [pos="TO" | word="to" %c] [pos="RR.*"]* [pos="V.I"] within s;
+set ToInfinitives match matchend;
+/feature[ToInfinitives];
+```
+
+### Passives
+
+TODO: disambiguate predicative adjectives
+TODO: bare (i.e. verbless) passives
+TODO: passive interrogatives
+TODO: improve nonfinite cases
+
+```cqp
+# be + (not + adverbs)? + being? + past participle
+# have + (not + adverbs)? + been + being? + past participle
+NonModalPassives = (
+    [pos="VB[^N].+"] [pos="XX"]? [pos="RR.*"]* |
+    [pos="VH.+"] [pos="XX"]? [pos="RR.*"]* [pos="VBN"] [pos="RR.*"]*
+) [pos="VBG"]? [pos="V.N.?"] within s;
+set NonModalPassives match matchend;
+
+# modal + (not + adverbs)? be (being)? + past participle
+# modal + (not + adverbs)? have been (being)? + past participle
+ModalPassives = (
+    [pos="VM"] [pos="XX"]? [pos="RR.*"]*
+    ([pos="VBI"] [pos="RR.*"]* | [pos="VH0"] [pos="RR.*"]* [pos="VBN"])
+    [pos="VBG"]? [pos="V.N.?"]
+) within s;
+set ModalPassives match matchend;
+
+# to + be + past participle
+ToPassives = [pos="TO"] [pos="VBI"] [pos="V.N.?"] within s;
+set ToPassives match matchend;
+
+# get + past participle
+GetPassives = [word="get(s|ting)?|got(ten)?"] ([pos="AT1?"]? [pos="N.+"] | [pos="P.+"])? [pos="RR.*"]* [pos="V.N.?"] within s;
+set GetPassives match matchend;
+
+/union[
+    Passives,
+    NonModalPassives,
+    ModalPassives,
+    ToPassives,
+    GetPassives
+];
+/feature[Passives];
+```
+
+TODO: perfect and progressive aspect
+
+### Coordination and Subordination
+
+```cqp
+CoordinatingConjunctions = [pos="CCB?"];
+/feature_count[CoordinatingConjunctions];
+
+SubordinatingConjunctions = [pos="CS[ANTW]?"];
+/feature_count[SubordinatingConjunctions];
+```
+
+### Interrogatives
+
+**Query**:
+
+1. question marks
+2. wh-questions
+3. yes-no questions
+4. tag questions
+
+TODO: clauses before interrogatives?
+
+```cqp
+QuestionMarks = "\?" expand to s;
+WhQuestions = <s> [pos="CCB?" | word="\p{P}"]? [pos="..Q.*"] [pos="V.*"] within s expand to s;
+# AT1 has many false positives
+# CLAWS tags many "is that ..." as CST
+YNQuestions = <s> [pos="CCB?" | word="\p{P}" & word!="nor"%c]? [pos="V[BDH][^0GIN][RZ]?" | pos="VM"] [pos="XX"]? [pos="PPY" | pos="PP[HI].+" | pos="D[BD]1?" | pos="AT" | pos="NN.?" | pos="APPGE" | pos="CST" | pos="EX"] within s expand to s;
+TagQuestions = [pos="V[BDH][^0GIN][RZ]?" | pos="VM"] [pos="XX" & word="n't"] [pos="PPHS[1S][12]?"] </s> within s expand to s;
+
+/union[Interrogatives, QuestionMarks, WhQuestions, YNQuestions, TagQuestions];
+/feature[Interrogatives];
+```
+
+### Imperatives
+
+**Query**:
+
+1. positive imperatives
+e.g., "give me the remote"
+2. negative imperatives
+e.g., "don't give in"
+excludes mental verbs (e.g., know, want) to catch subject ellipses
+3. let imperatives
+e.g., "let's go to the beach"
+
+TODO: better disambiguation
+TODO: more clauses before imperatives
+TODO: cases like "Somebody watch my dog."
+
+```cqp
+define $MentalWords < "wordlists/process_types/MentalWords.txt";
+
+PositiveImperatives = <s> ([pos="TO"] []+ ",")? [pos="CCB?" | (pos="R.+" & pos!="RRQV?") | word="\p{P}"]? [pos="V.0"] [pos!="V.Z.*|VM.*"] []* [word!="\?"]</s>;
+NegativeImperatives = <s> ([pos="TO"] []+ ",")? [pos="CCB?" | word="\p{P}"]? [pos="VD0" & word!=RE($MentalWords)%c] [pos="XX"] [pos="V.I"] [: pos!="RRQ" :] within s expand to s;
+
+# periphrastic first and third person imperatives with let
+LetImperatives = [pos="VM21"] [pos="VM22"] [pos="RR.*"]* [pos="V.I.?"] within s expand to s;
+
+/union[Imperatives, PositiveImperatives, NegativeImperatives, LetImperatives];
+/feature[Imperatives];
+```
+
+### Titles
+
+**Query**:
+
+1. titles following a noun (e.g., M.A.)
+2. titles preceding a noun (e.g., Dr.)
+3. wordlist to improve recall due to possible tagging errors
+4. fixed expressions (at the moment only "the honourable...")
+
+```cqp
+NNAs = [pos="NNA"];
+NNBs = [pos="NNB"];
+define $TitleWords < "wordlists/TitleWords.txt";
+TitleWords = @[word=RE($TitleWords)%c] [pos="NP.+"] within s;
+set TitleWords matchend target;
+Honorables = (?longest) "the"%c "honou?rable"%c [pos="[JN].+"]+ within s;
+/union[Titles, NNAs, NNBs, TitleWords, Honorables];
+/feature[Titles];
+```
+
+### Greetings
+
+#### Salutations
+
+**Query**:
+
+1. casual salutations
+2. variations of "good ..."
+3. variations of "good ..." with addressee
+4. generic addressee singular
+5. generic addressee plural
+6. royal address
+7. variations of "dear ..."
+
+```cqp
+CasualSalutations = "hello|hi(ya)?|heya?|yo|sup|whazzup|g'day";
+
+GoodSalutations1 = <s> "good"%c "day|morning|afternoon|evening"%c </s>;
+GoodSalutations2 = "good"%c "day|morning|afternoon|evening"%c ("to"%c "you"%c | [pos="N.+"]+) within s;
+
+GenericSalutations1 = TAB "to"%c "whom"%c "it"%c "may"%c "concern"%c within s;
+GenericSalutations2 = TAB "lad(y|ies)"%c [pos="CCB?"] "gentlem[ae]n"%c within s;
+RoyalSalutations = TAB "your"%c "royal"%c? "majesty|highness|excellence"%c within s;
+
+DearSalutations = (?longest)(
+    ([pos!="APPGE|AT1?" & word!=","] | <s>)
+    [word="dear"%c] ([pos="NNB"] "\."?)?
+    [pos="N.+|DB2?" & pos!="NN[UT][12]?" & word!="god|lord"%c]+
+    ([pos="CC"] ([pos="NNB"] "\."?)? [pos="N.+|DB2?"]+)*
+) within s;
+
+/union[
+    Salutations,
+    CasualSalutations,
+    GoodSalutations1,
+    GoodSalutations2,
+    GenericSalutations1,
+    GenericSalutations2,
+    RoyalSalutations,
+    DearSalutations
+];
+```
+
+#### Valedictions
+
+**Query**:
+
+1. unambiguous expressions (e.g., "best wishes")
+2. ambiguous expressions with comma (e.g., "best,")
+
+TODO: what about "X sends best wishes"
+TODO: count coordinated expressions separately?
+
+```cqp
+Valedictions1 = (
+    (<s> | [pos!="APPGE" & word!="your|their"]) [pos="IW"]?
+    "personal|best|(warm|kind(est)?)"%c "regards|wishes"%c |
+    "yours"%c "sincerely|faithfully|truly"%c |
+    [pos="RG"]? "sincerely|truly|respectfully|cordially"%c "yours"%c
+);
+
+Valedictions2 = <s> "best|cheers|yours|cordially|respectfully|warmly|regards|sincerely|thanks"%c ",";
+/union[Valedictions, Valedictions1, Valedictions2];
+```
+
+```cqp
+/union[Greetings, Salutations, Valedictions];
+/feature[Greetings];
+```
+
+### Adverbs
+
+TODO: handle phrasal verbs (e.g., "throw away")
+
+```cqp
+define $SpaceWords < "wordlists/adverbs/SpaceWords.txt";
+RLs = [: word!="look(s|ing|ed)?"%c :] [pos="RL(\d1)?" & word!="together|downstream" %c] within s;
+SpaceWords = [pos="R[^P].+" & word=RE($SpaceWords)%c];
+
+/union[SpaceAdverbs, RLs, SpaceWords];
+/feature_count[SpaceAdverbs];
+
+define $TimeWords < "wordlists/adverbs/TimeWords.txt";
+RTs = [pos="RT(\d1)?"]; # only count ditto tags once
+TimeWords = [pos="R[^P].+" & word=RE($TimeWords)%c];
+TimeMetaphors = [word="look(s|ing|ed)?" %c] [word="forward|back(ward)?" %c] within s;
+set TimeMetaphors match matchend;
+
+/union[TimeAdverbs, RTs, TimeWords, TimeMetaphors];
+/feature_count[TimeAdverbs];
+```
+
+## Themes
+
+TODO: consider multiple themes?
+
+### Textual
+
+#### Continuatives
+
+```cqp
+InitialContinuatives = <s> [word="\p{P}"]? [pos="UH" | word="yes|no|well|oh|now|please"%c] | "no"%c [: word!="matter"%c :] within s;
+/feature[InitialContinuatives];
+```
+
+#### Conjunctions
+
+```cqp
+define $ParatacticWords = "for and nor but or yet so either neither"; # fanboys plus (n)either
+InitialCoordinators = <s> [word="\p{P}"]? [pos="CCB?" | word=RE($ParatacticWords)%c | (word="for"%c & pos="CS")] | [word="so"%c] [: pos!="JJ" :] within s;
+InitialSubordinators = <s> [word="\p{P}"]? [pos="CS[ANTW]?" & word!="that"%c] within s;
+/union[InitialConjunctions, InitialCoordinators, InitialSubordinators];
+/feature[InitialConjunctions];
+```
+
+##### Conjunctive Adjuncts
+
+Halliday & Matthiessen (2014: Table 3-4)
+
+```cqp
+InitialConjunctiveAdjuncts = <s> [word="\p{P}"]? /mwu_conjunctiveadjuncts[] within s;
+/feature[InitialConjunctiveAdjuncts];
+```
+
+##### Ordinal Numbers
+
+```cqp
+InitialNumbers = <s> [word="\p{P}"]? [word="\d+"] [word="\p{P}"] within s;
+/feature[InitialNumbers];
+```
+
+### Interpersonal
+
+#### Modal Adjuncts
+
+Halliday & Matthiessen (2014: Table 3-5)
+
+```cqp
+InitialModalAdjuncts = <s> [word="\p{P}"]? /mwu_modaladjuncts[] within s;
+/feature[InitialModalAdjuncts];
+```
+
+#### Finite Verbs
+
+TODO: separate positive imperatives (experiential) from negatives imperatives and yes-no questions (interpersonal)
+
+```cqp
+InitialFiniteVerbs = <s> [word="\p{P}"]? [pos="VB([MRZ]|D[RZ])|VH[0DZ]|VD[DZ]" | pos="VMK?"] within s;
+/feature[InitialFiniteVerbs];
+```
+
+### Other
+
+#### Nonfinite Clauses
+
+TODO: disambiguate experiential, interpersonal, and textual uses
+
+```cqp
+InitialToInfinitives = <s> [word="\p{P}"]? [pos="TO" | word="to"%c] [pos="R.+"]* [pos="V.I"] within s expand to s;
+InitialParticiples = <s> [word="\p{P}"]? [pos="V.[GN].?"] within s expand to s;
+/union[InitialNonFinites, InitialToInfinitives, InitialParticiples];
+/feature[InitialNonFinites];
+```
+
+## Transitivity
+
+TODO: improve wordlists
+
+### Material Processes
+
+Halliday & Matthiessen (2014: Table 5-5)
+
+```cqp
+define $MaterialWords < "wordlists/process_types/MaterialWords.txt";
+MaterialProcesses = [pos="V.+" & word=RE($MaterialWords)];
+/feature[MaterialProcesses];
+```
+
+### Mental Processes
+
+Halliday & Matthiessen (2014: Table 5-10)
+
+```cqp
+MentalProcesses = [pos="V.+" & word=RE($MentalWords)];
+/feature[MentalProcesses];
+```
+
+### Relational Processes
+
+Halliday & Matthiessen (2014: Table 5-20, 5-21)
+
+```cqp
+# MU query with right constraint to avoid hits for cases like "was giving"
+# Ideally, we would disallow any other verbs until the next clause.
+BeHaveProcesses = MU(meet (meet [pos="V[BH].+"] not [pos="EX"]) not [pos="V.+"] 1 5);
+
+define $RelationalWords < "wordlists/process_types/RelationalWords.txt";
+RelationalWords = [pos="V.+" & word=RE($RelationalWords)%c];
+
+/union[RelationalProcesses, BeHaveProcesses, RelationalWords];
+/feature[RelationalProcesses];
+```
+
+### Verbal Processes
+
+Halliday & Matthiessen (2014: 5-25)
+
+TODO: add query for *be like*
+
+```cqp
+define $VerbalWords < "wordlists/process_types/VerbalWords.txt";
+VerbalProcesses = [pos="V.+" & word=RE($VerbalWords)];
+/feature[VerbalProcesses];
+```
+
+### Existential Processes
+
+Halliday & Matthiessen (2014: Table 5-26)
+
+TODO: metereological processes (considered kind of borderline)?
+
+```cqp
+define $ExistentialWords < "wordlists/process_types/ExistentialWords.txt";
+ExistentialWords = MU(meet "there"%c [word=RE($ExistentialWords)] s);
+set ExistentialWords matchend match;
+
+ExistentialPos = [pos="EX"];
+ExistentialTheres = "there"%c ([pos="V[BDH].+"] | ([pos="VM"] | [pos="VMK"] [pos="XX"]? [pos="TO"]?));
+/union[ExistentialProcesses, ExistentialWords, ExistentialPos, ExistentialTheres];
+/feature[ExistentialProcesses];
+```
