@@ -23,7 +23,7 @@ def _build_feature_matrix(stdout: Iterator[str]) -> FeatureMatrix:
     line = next(stdout, None)
     assert line is not None
     ftype, feature = line.removeprefix("=====").split()
-    assert ftype == "TOKENS" and feature == "Corpus"
+    assert ftype == "TOKENS" and feature == "n_token"
     n_tokens = 0
     sattrs = set[str]()
     while (line := next(stdout)) != _EOL:

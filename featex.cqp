@@ -16,7 +16,8 @@ which should be re-activated after using a subquery.
 
 ```cqp
 define macro < "macros/featex.m";
-/init[text_id];
+define macro < "macros/mwus.m";
+/init_corpus[text_id];
 ```
 
 The `/union[...]` and `/diff[...]` macros create a set union or difference of the provided
