@@ -1,7 +1,7 @@
 ## tabulate instances of a feature
 MACRO feature($0=NQR $1=feature)
   cat $0 0 0 > "| echo '=====TOKENS $1'";
-  tabulate $0 match, matchend, match /text_id[];
+  tabulate $0 match, matchend, match /_text_id[];
   .EOL.;
 ;
 
@@ -13,7 +13,7 @@ MACRO feature($0=NQR)
 ## generate per-text frequency counts directly
 MACRO feature_count($0=NQR $1=feature)
   cat $0 0 0 > "| echo '=====COUNTS $1'";
-  group $0 match /text_id[];
+  group $0 match /_text_id[];
   .EOL.;
 ;
 
