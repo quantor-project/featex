@@ -18,3 +18,5 @@ terrors?
 trading
 universit(y|ies)
 velocity
+manganese
+diocese
