@@ -1,36 +1,34 @@
 ## tabulate instances of a feature
 MACRO feature($0=NQR $1=feature)
   cat $0 0 0 > "| echo '=====TOKENS $1'";
-  tabulate $0 match, matchend, match /_text_id[];
+  tabulate $0 match, matchend, match /_attribute[];
   .EOL.;
 ;
 
 MACRO feature($0=NQR)
-  /feature[$0, "$0"]
-  cat "=====TOKENS $0\n";
+  /feature[$0, "$0"];
 ;
 
-## generate per-text frequency counts directly
+## generate per-attribute frequency counts directly
 MACRO feature_count($0=NQR $1=feature)
   cat $0 0 0 > "| echo '=====COUNTS $1'";
-  group $0 match /_text_id[];
+  group $0 match /_attribute[];
   .EOL.;
 ;
 
 MACRO feature_count($0=NQR)
-  /feature_count[$0, "$0"]
+  /feature_count[$0, "$0"];
 ;
 
 ## initialize feature extraction (for full corpus or subcorpus)
-MACRO init_corpus($0=text_id)
-  define macro _text_id(0) "$0";
-  _Texts = <$0> [] expand to $0;
-  /feature[_Texts, "n_token"];
-  discard _Texts;
+MACRO init_corpus($0=attribute)
+  define macro _attribute(0) "$0";
+  Corpus = <$0> [] expand to $0;
+  /feature[Corpus, "n_token"];
 ;
 
-MACRO init_subcorpus($0=Subcorpus $1=text_id)
-  define macro _text_id(0) "$1";
+MACRO init_subcorpus($0=Subcorpus $1=attribute)
+  define macro _attribute(0) "$1";
   $0 = $0 expand to $1;
   /feature[$0, "n_token"];
   $0; # activate subcorpus
