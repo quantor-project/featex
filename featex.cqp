@@ -100,7 +100,7 @@ NeoclassicalCompounds = [pos!="NP" & word=RE($NeoclassicalAffixes)%c & word!=RE(
 ### Pronouns
 
 ```cqp
-AllPronouns = [pos="P.+"];
+AllPronouns = [pos="A?P.+"];
 /feature_count[AllPronouns];
 ```
 
