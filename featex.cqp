@@ -772,13 +772,18 @@ Halliday & Matthiessen (2014: Table 5-26)
 
 TODO: metereological processes (considered kind of borderline)?
 
+Uses some matching hacks for extracting the verb instead of *there*.
+
 ```cqp
 define $ExistentialWords < "wordlists/process_types/ExistentialWords.txt";
-ExistentialWords = MU(meet "there"%c [word=RE($ExistentialWords)] s);
-set ExistentialWords matchend match;
+ExistentialWords = TAB [word="there"%c] * [word=RE($ExistentialWords)%c] within s;
+set ExistentialWords match matchend;
 
-ExistentialPos = [pos="EX"];
-ExistentialTheres = "there"%c ([pos="V[BDH].+"] | ([pos="VM"] | [pos="VMK"] [pos="XX"]? [pos="TO"]?));
+ExistentialPos = TAB [pos="EX"] * [pos="V.+"] within s;
+set ExistentialPos match matchend;
+ExistentialTheres = "there"%c (@[pos="V[BDH].+"] | (@[pos="VM"] | @[pos="VMK"] [pos="XX"]? [pos="TO"]?)) within s;
+set ExistentialTheres match target;
+set ExistentialTheres matchend target;
 /union[ExistentialProcesses, ExistentialWords, ExistentialPos, ExistentialTheres];
 /feature[ExistentialProcesses];
 ```
