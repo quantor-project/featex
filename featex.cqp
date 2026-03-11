@@ -48,12 +48,15 @@ Words = [pos="\w+"];
 
 ### Content Words
 
-**Query**: all nouns (N), verbs (V), adjectives (J), and adverbs (R).
-
-TODO: exclude auxiliaries
+**Query**: all nouns (N), verbs (V) excluding auxiliaries, adjectives (J), and adverbs (R).
 
 ```cqp
-ContentWords = [pos="[NJVR].+" & pos!="RP|VMK?"];
+NVJRs = [pos="[NVJR].+" & pos!="RP|VMK?"];
+VerbPhrases = (?longest) [pos="V[BDH][^I][RZ]?" | pos="VMK?"] [pos="XX"]? [pos="R.+"]* [pos="VBN"]? [pos="VBG"]? [:pos="V.[GN]K?":] within s;
+VerbPhrases;
+AuxiliaryVerbs = [pos!="XX|R.+"];
+Corpus;
+/diff[ContentWords, NVJRs, AuxiliaryVerbs];
 /feature_count[ContentWords];
 ```
 
