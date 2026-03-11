@@ -1,4 +1,6 @@
 actually
+additionally
+afterwards
 also
 alternatively
 anyway
@@ -6,6 +8,8 @@ besides
 briefly
 conversely
 finally
+furthermore
+hence
 however
 instead
 likewise
@@ -15,4 +19,6 @@ nevertheless
 next
 otherwise
 soon
+subsequently
 therefore
+thus

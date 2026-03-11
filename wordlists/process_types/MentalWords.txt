@@ -60,11 +60,13 @@ interests|interested|interesting|interest
 intriguing|intrigued|intrigues|intrigue
 known|knowing|knew|knows|know
 liking|liked|likes|like
+listen|listens|listening|listened
 loathes|loathing|loathed|loathe
 loving|loved|loves|love
 marvelled|marveled|marvels|marvelling|marveling|marvel
 mourning|mourned|mourns|mourn
 notice|noticed|noticing|notices
+notice|notices|noticing|noticed
 offends|offended|offending|offend
 overhear|overheard|overhearing|overhears
 pains|paining|pained|pain

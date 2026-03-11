@@ -20,9 +20,11 @@ hyper.+
 hypo.+
 inter.+
 intra.+
+iso.+
 macro.+
 mecha.+
 mega.+
+meso.+
 micro.+
 mono.+
 nano.+
@@ -32,9 +34,11 @@ non.+
 photo.+
 poly.+
 psy.+
+radio.+
 semi.+
 spectro.+
 stereo.+
+sub.+
 super.+
 tech.+
 tele.+

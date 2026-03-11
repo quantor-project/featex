@@ -270,12 +270,12 @@ AllAdjectives = [pos="J.+"];
 AttributiveAdjectives = (?longest)(
     (
         ([word=","] | [word=","]? [pos="CCB?"])?
-        [pos="R.+"]* [pos="J.+|MD|N.+"]
+        [pos="R.+"]* [pos="J.+|M.+|N.+|"]
     )+
     [pos="N.+"]+
 ) within s;
 AttributiveAdjectives;
-AttributiveAdjectives = [pos="J.+|MD"];
+AttributiveAdjectives = [pos="J.+|M.+"];
 /feature[AttributiveAdjectives];
 Corpus; # reactivate corpus
 ```
@@ -361,7 +361,7 @@ AllVerbs = [pos="V.+"];
 For normalization of other verb features.
 
 ```cqp
-FiniteVerbs = [pos="V.[^ING].?"];
+FiniteVerbs = [pos="V.[^ING].?" | pos="VMK?"];
 /feature[FiniteVerbs];
 ```
 
@@ -392,10 +392,10 @@ TODO: is-to futures? (may be too ambiguous)
 ```cqp
 # use V.+ instead of VM to counteract tagging errors (hopfully unproblematic
 # since the combination of tag, surface form, and infinitive should be unambiguous)
-WillFutures = TAB [pos="V.+" & word="will|'ll|wo|shall|sha"%c] [pos="XX"]? [pos="RR.*"]* [pos="V.I"] within s;
+WillFutures = [pos="V.+" & word="will|'ll|wo|shall|sha"%c] [pos="XX"]? [pos="RR.*"]* [pos="V.I"] within s;
 /feature[WillFutures];
 
-GoingToFutures1 = [pos="VB.+"] [pos="XX"]? [pos="RR.*"]* @[word="going" | pos="VVGK"] [pos="TO"] [pos="V.I"] within s;
+GoingToFutures1 = [pos="VB.+"] [pos="XX"]? [pos="RR.*"]* [word="going" | pos="VVGK"] [pos="TO"] [pos="V.I"] within s;
 GoingToFutures2 = [word="I'?mm?a"%c | word="gonna"%c] [pos="V.I"];
 /union[GoingToFutures, GoingToFutures1, GoingToFutures2];
 /feature[GoingToFutures];
@@ -438,16 +438,16 @@ TODO: improve nonfinite cases
 # be + (not + adverbs)? + being? + past participle
 # have + (not + adverbs)? + been + being? + past participle
 NonModalPassives = (
-    [pos="VB[^N].+"] [pos="XX"]? [pos="RR.*"]* |
-    [pos="VH.+"] [pos="XX"]? [pos="RR.*"]* [pos="VBN"] [pos="RR.*"]*
+    [pos="VB[^N].*"] [pos="XX"]? [pos="R.*"]* |
+    [pos="VH.+"] [pos="XX"]? [pos="R.*"]* [pos="VBN"] [pos="R.*"]*
 ) [pos="VBG"]? [pos="V.N.?"] within s;
 set NonModalPassives match matchend;
 
 # modal + (not + adverbs)? be (being)? + past participle
 # modal + (not + adverbs)? have been (being)? + past participle
 ModalPassives = (
-    [pos="VM"] [pos="XX"]? [pos="RR.*"]*
-    ([pos="VBI"] [pos="RR.*"]* | [pos="VH0"] [pos="RR.*"]* [pos="VBN"])
+    [pos="VM"] [pos="XX"]? [pos="R.*"]*
+    ([pos="VBI"] [pos="R.*"]* | [pos="VH0"] [pos="R.*"]* [pos="VBN"])
     [pos="VBG"]? [pos="V.N.?"]
 ) within s;
 set ModalPassives match matchend;
@@ -457,7 +457,7 @@ ToPassives = [pos="TO"] [pos="VBI"] [pos="V.N.?"] within s;
 set ToPassives match matchend;
 
 # get + past participle
-GetPassives = [word="get(s|ting)?|got(ten)?"] ([pos="AT1?"]? [pos="N.+"] | [pos="P.+"])? [pos="RR.*"]* [pos="V.N.?"] within s;
+GetPassives = [word="get(s|ting)?|got(ten)?"] ([pos="AT1?"]? [pos="N.+"] | [pos="P.+"])? [pos="R.*"]* [pos="V.N.?"] within s;
 set GetPassives match matchend;
 
 /union[
@@ -498,8 +498,8 @@ QuestionMarks = "\?" expand to s;
 WhQuestions = <s> [pos="CCB?" | word="\p{P}"]? [pos="..Q.*"] [pos="V.*"] within s expand to s;
 # AT1 has many false positives
 # CLAWS tags many "is that ..." as CST
-YNQuestions = <s> [pos="CCB?" | word="\p{P}" & word!="nor"%c]? [pos="V[BDH][^0GIN][RZ]?" | pos="VM"] [pos="XX"]? [pos="PPY" | pos="PP[HI].+" | pos="D[BD]1?" | pos="AT" | pos="NN.?" | pos="APPGE" | pos="CST" | pos="EX"] within s expand to s;
-TagQuestions = [pos="V[BDH][^0GIN][RZ]?" | pos="VM"] [pos="XX" & word="n't"] [pos="PPHS[1S][12]?"] </s> within s expand to s;
+YNQuestions = <s> [(pos="CCB?"  & word!="nor"%c) | word="\p{P}"]? [pos="NP[12]|UH"]? [pos="VH[0Z]" | pos="VB[DMRZ][RZ]?" | pos="VD[0DZ]" | pos="VM"] [pos="XX"]? [pos="PPY" | pos="PP[HI].+" | pos="D[BD]1?" | pos="AT" | pos="NN.?" | pos="APPGE" | pos="CST" | pos="EX"] within s expand to s;
+TagQuestions = [pos="V[BDH][^GIN][RZ]?" | pos="VM"] [pos="XX" & word="n't"] [pos="PPHS[1S][12]?"] </s> within s expand to s;
 
 /union[Interrogatives, QuestionMarks, WhQuestions, YNQuestions, TagQuestions];
 /feature[Interrogatives];
@@ -524,7 +524,7 @@ TODO: cases like "Somebody watch my dog."
 ```cqp
 define $MentalWords < "wordlists/process_types/MentalWords.txt";
 
-PositiveImperatives = <s> ([pos="TO"] []+ ",")? [pos="CCB?" | (pos="R.+" & pos!="RRQV?") | word="\p{P}"]? [pos="V.0"] [pos!="V.Z.*|VM.*"] []* [word!="\?"]</s>;
+PositiveImperatives = <s> ([pos="TO"] []+ ",")? [pos="CCB?" | (pos="R.+" & pos!="RRQV?") | word="\p{P}"]? [pos="V.0"] [pos!="V.Z.*|VM.*|PP.S.?|PPY"] []* [word!="\?"]</s>;
 NegativeImperatives = <s> ([pos="TO"] []+ ",")? [pos="CCB?" | word="\p{P}"]? [pos="VD0" & word!=RE($MentalWords)%c] [pos="XX"] [pos="V.I"] [: pos!="RRQ" :] within s expand to s;
 
 # periphrastic first and third person imperatives with let
@@ -550,7 +550,8 @@ define $TitleWords < "wordlists/TitleWords.txt";
 TitleWords = @[word=RE($TitleWords)%c] [pos="NP.+"] within s;
 set TitleWords matchend target;
 Honorables = (?longest) "the"%c "honou?rable"%c [pos="[JN].+"]+ within s;
-/union[Titles, NNAs, NNBs, TitleWords, Honorables];
+FixedExpressions = "your"%c "honors?"%c | "my"%c "lords?|lad(y|ies)"%c;
+/union[Titles, NNAs, NNBs, TitleWords, Honorables, FixedExpressions];
 /feature[Titles];
 ```
 
@@ -655,15 +656,15 @@ TODO: consider multiple themes?
 #### Continuatives
 
 ```cqp
-InitialContinuatives = <s> [word="\p{P}"]? [pos="UH" | word="yes|no|well|oh|now|please"%c] | "no"%c [: word!="matter"%c :] within s;
+InitialContinuatives = <s> [word="\p{P}"]? ([pos="UH" | word="yes|well|oh|now|please"%c] | "no"%c [: word!="matter"%c & pos!="[J|N].+" :]) within s;
 /feature[InitialContinuatives];
 ```
 
 #### Conjunctions
 
 ```cqp
-define $ParatacticWords = "for and nor but or yet so either neither"; # fanboys plus (n)either
-InitialCoordinators = <s> [word="\p{P}"]? [pos="CCB?" | word=RE($ParatacticWords)%c | (word="for"%c & pos="CS")] | [word="so"%c] [: pos!="JJ" :] within s;
+define $ParatacticWords = "for and nor but or yet either neither"; # fanboys plus (n)either
+InitialCoordinators = <s> ([word="\p{P}"]? ([pos="CCB?" | word=RE($ParatacticWords)%c | (word="for"%c & pos="CS")] | [word="so"%c] [: pos!="JJ" :])) within s;
 InitialSubordinators = <s> [word="\p{P}"]? [pos="CS[ANTW]?" & word!="that"%c] within s;
 /union[InitialConjunctions, InitialCoordinators, InitialSubordinators];
 /feature[InitialConjunctions];
@@ -674,7 +675,10 @@ InitialSubordinators = <s> [word="\p{P}"]? [pos="CS[ANTW]?" & word!="that"%c] wi
 Halliday & Matthiessen (2014: Table 3-4)
 
 ```cqp
-InitialConjunctiveAdjuncts = <s> [word="\p{P}"]? /mwu_conjunctiveadjuncts[] within s;
+define $ConjunctiveAdjuncts < "wordlists/adjuncts/ConjunctiveAdjuncts.txt";
+InitialConjunctiveAdjunctWords = <s> [word="\p{P}"]? [word=RE($ConjunctiveAdjuncts)%c] within s;
+InitialConjunctiveAdjunctMWUs = <s> [word="\p{P}"]? /mwu_conjunctiveadjuncts[] within s;
+/union[InitialConjunctiveAdjuncts, InitialConjunctiveAdjunctWords, InitialConjunctiveAdjunctMWUs];
 /feature[InitialConjunctiveAdjuncts];
 ```
 
@@ -692,7 +696,10 @@ InitialNumbers = <s> [word="\p{P}"]? [word="\d+"] [word="\p{P}"] within s;
 Halliday & Matthiessen (2014: Table 3-5)
 
 ```cqp
-InitialModalAdjuncts = <s> [word="\p{P}"]? /mwu_modaladjuncts[] within s;
+define $ModalAdjuncts < "wordlists/adjuncts/ModalAdjuncts.txt";
+InitialModalAdjunctWords = <s> [word="\p{P}"]? [pos="XX"]? [word=RE($ModalAdjuncts)%c] within s;
+InitialModalAdjunctMWUs = <s> [word="\p{P}"]? /mwu_modaladjuncts[] within s;
+/union[InitialModalAdjuncts, InitialModalAdjunctWords, InitialModalAdjunctMWUs];
 /feature[InitialModalAdjuncts];
 ```
 
@@ -701,7 +708,7 @@ InitialModalAdjuncts = <s> [word="\p{P}"]? /mwu_modaladjuncts[] within s;
 TODO: separate positive imperatives (experiential) from negatives imperatives and yes-no questions (interpersonal)
 
 ```cqp
-InitialFiniteVerbs = <s> [word="\p{P}"]? [pos="VB([MRZ]|D[RZ])|VH[0DZ]|VD[DZ]" | pos="VMK?"] within s;
+InitialFiniteVerbs = <s> [pos="V.[^ING].?"  | pos="VMK?"] within s;
 /feature[InitialFiniteVerbs];
 ```
 
@@ -721,53 +728,6 @@ InitialParticiples = <s> [word="\p{P}"]? [pos="V.[GN].?"] within s expand to s;
 ## Transitivity
 
 TODO: improve wordlists
-
-### Material Processes
-
-Halliday & Matthiessen (2014: Table 5-5)
-
-```cqp
-define $MaterialWords < "wordlists/process_types/MaterialWords.txt";
-MaterialProcesses = [pos="V.+" & word=RE($MaterialWords)];
-/feature[MaterialProcesses];
-```
-
-### Mental Processes
-
-Halliday & Matthiessen (2014: Table 5-10)
-
-```cqp
-MentalProcesses = [pos="V.+" & word=RE($MentalWords)];
-/feature[MentalProcesses];
-```
-
-### Relational Processes
-
-Halliday & Matthiessen (2014: Table 5-20, 5-21)
-
-```cqp
-# MU query with right constraint to avoid hits for cases like "was giving"
-# Ideally, we would disallow any other verbs until the next clause.
-BeHaveProcesses = MU(meet (meet [pos="V[BH].+"] not [pos="EX"]) not [pos="V.+"] 1 5);
-
-define $RelationalWords < "wordlists/process_types/RelationalWords.txt";
-RelationalWords = [pos="V.+" & word=RE($RelationalWords)%c];
-
-/union[RelationalProcesses, BeHaveProcesses, RelationalWords];
-/feature[RelationalProcesses];
-```
-
-### Verbal Processes
-
-Halliday & Matthiessen (2014: 5-25)
-
-TODO: add query for *be like*
-
-```cqp
-define $VerbalWords < "wordlists/process_types/VerbalWords.txt";
-VerbalProcesses = [pos="V.+" & word=RE($VerbalWords)];
-/feature[VerbalProcesses];
-```
 
 ### Existential Processes
 
@@ -789,4 +749,56 @@ set ExistentialTheres match target;
 set ExistentialTheres matchend target;
 /union[ExistentialProcesses, ExistentialWords, ExistentialPos, ExistentialTheres];
 /feature[ExistentialProcesses];
+```
+
+### Relational Processes
+
+Halliday & Matthiessen (2014: Table 5-20, 5-21)
+
+```cqp
+# MU query with right constraint to avoid hits for cases like "was giving"
+# Ideally, we would disallow any other verbs until the next clause.
+BeHaveProcesses = MU(meet [pos="V[BH].+"] not [pos="V.[NG]K?" | pos="JK"] 1 3);
+
+define $RelationalWords < "wordlists/process_types/RelationalWords.txt";
+RelationalWords = [pos="V.+" & word=RE($RelationalWords)%c];
+
+/union[RelationalProcesses, BeHaveProcesses, RelationalWords];
+# filter processes already identified earlier
+/diff[RelationalProcesses, RelationalProcesses, ExistentialProcesses];
+/feature[RelationalProcesses];
+```
+
+### Verbal Processes
+
+Halliday & Matthiessen (2014: 5-25)
+
+TODO: add query for *be like*
+
+```cqp
+define $VerbalWords < "wordlists/process_types/VerbalWords.txt";
+VerbalProcesses = [pos="V.+" & word=RE($VerbalWords)];
+/diff[VerbalProcesses, VerbalProcesses, RelationalProcesses, ExistentialProcesses];
+/feature[VerbalProcesses];
+```
+
+### Mental Processes
+
+Halliday & Matthiessen (2014: Table 5-10)
+
+```cqp
+MentalProcesses = [pos="V.+" & word=RE($MentalWords)];
+/diff[MentalProcesses, MentalProcesses, VerbalProcesses, RelationalProcesses, ExistentialProcesses];
+/feature[MentalProcesses];
+```
+
+### Material Processes
+
+Halliday & Matthiessen (2014: Table 5-5)
+
+```cqp
+define $MaterialWords < "wordlists/process_types/MaterialWords.txt";
+MaterialProcesses = [pos="V.+" & word=RE($MaterialWords)];
+/diff[MaterialProcesses, MaterialProcesses, MentalProcesses, VerbalProcesses, RelationalProcesses, ExistentialProcesses]
+/feature[MaterialProcesses];
 ```

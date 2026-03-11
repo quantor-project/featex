@@ -1,6 +1,7 @@
 abused|abuse|abuses|abusing
 announcing|announced|announces|announce
 argues|arguing|argued|argue
+ask|asks|asking|asked
 begged|begging|begs|beg
 blaming|blames|blamed|blame
 censures|censure|censured|censuring

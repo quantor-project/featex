@@ -26,7 +26,6 @@ features|featured|featuring|feature
 fitted|fit|fits|fitting
 followed|following|follows|follow
 greet|greets|greeted|greeting
-hast|having|has|hath|had|have|hadst
 housed|house|houses|housing
 including|include|included|includes
 inhabits|inhabiting|inhabited|inhabit

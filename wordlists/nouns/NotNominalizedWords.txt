@@ -4,8 +4,10 @@ artists?
 attention
 characters?
 charit(y|ies)
+diocese
 disasters?
 functions?
+manganese
 mechanisms?
 members?
 operating
@@ -18,5 +20,3 @@ terrors?
 trading
 universit(y|ies)
 velocity
-manganese
-diocese

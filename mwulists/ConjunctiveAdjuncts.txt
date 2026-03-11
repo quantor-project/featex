@@ -11,6 +11,7 @@ in conclusion
 in fact
 as a matter of fact
 in addition
+on the one hand
 on the other hand
 before that
 later on
@@ -23,3 +24,6 @@ under the circumstances
 despite that
 in this respect
 as far as that 's concerned
+for the latter
+for the former
+in particular
