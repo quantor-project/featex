@@ -64,12 +64,16 @@ Corpus;
 
 #### Common Nouns
 
+**Definition**: include nouns that denote individual countable entities (count nouns) like 'book' as well as nouns that denote an undifferentiated mass or continuum (noncount nouns) like 'furniture' (Quirk et al. 2010, 246).
+
 ```cqp
 CommonNouns = [pos="NN[ABLOTU]?[12]?|ND1"];
 /feature_count[CommonNouns];
 ```
 
 #### Proper Nouns
+
+**Definition**: Proper nouns are names of specific people (Shakespeare), places (Milwaukee), months (September), days (Thursday), festivals (Christmas), magazines (Vogue), and so forth. They lack articles and are usually written with initial capital letters (Quirk et al. 2010, 288).
 
 ```cqp
 ProperNouns = [pos="NP[DM]?[12]"];
@@ -78,7 +82,9 @@ ProperNouns = [pos="NP[DM]?[12]"];
 
 #### Nominalizations
 
-**Definition**: nouns created from adjectives or verbs through *derivation*.
+**Definition**: nouns created from adjectives or verbs through *derivation*. Derivation is based on affixation including prefixation and suffixation (Quirk et al. 2010, 1520).
+- Prefixation: putting a prefix in front of the base, sometimes with, but more usually without, a change of word class
+- Suffixation: putting a suffix after the base, sometimes without, but more usually with, a change of word class
 **Query**: a positive wordlist of common nominalizing suffixes in combination with a negative wordlist to exclude certain high frequency false positives.
 
 ```cqp
@@ -90,7 +96,7 @@ Nominalizations = [pos="NN.+" & word=RE($NominalizingSuffixes)%c & word!=RE($Not
 
 #### Neoclassical Compounds
 
-**Definition**: words composed of affixes and stems from classical Latin or ancient Greek.
+**Definition**: words containing a neoclassical prefix and/or neoclassical suffix. "Neoclassical" refers to items that are originally Greek or Latin (Quirk et al. 2010, 1545).
 **Query**: a positive wordlist of common neoclassical affixes in combination with a negative wordlist to exclude certain high frequency false positives.
 
 ```cqp
@@ -102,12 +108,16 @@ NeoclassicalCompounds = [pos!="NP" & word=RE($NeoclassicalAffixes)%c & word!=RE(
 
 ### Pronouns
 
+**Definition**: pronouns comprise a varied class of closed-class words with nominal function. By ‘nominal’ here we mean ‘noun-like’ or ‘like a noun phrase’. They may (A) substitute for some word or phrase, (B) signal, as personal pronouns do, that reference is being made to something which is given or known within the linguistic or situational context, or (C) stand for a very general concept, so that its reference includes the reference of untold more specific noun phrases (Quirk et al. 2010, 335).
+
 ```cqp
 AllPronouns = [pos="A?P.+"];
 /feature_count[AllPronouns];
 ```
 
 #### Personal Pronouns
+
+**Definition**: pronouns that have either a determinative function (my, our, etc.) or an independent function as a noun phrase (mine, ours, etc.) (Quirk et al. 2010, 361).
 
 TODO: differentiate subjective and objective *you*/*it*
 
@@ -155,6 +165,8 @@ PronounIndefiniteSingular = [pos="PN1"];
 
 #### Possessive Pronouns
 
+**Definition**: pronouns that have either a determinative function (my, our, etc.) or an independent function as a noun phrase (mine, ours, etc.) (Quirk et al. 2010, 361)
+
 TODO: *its* is never tagged as PPGE
 
 ```cqp
@@ -180,6 +192,8 @@ PronounTheirs = [pos="PPGE" & word="theirs"%c];
 ```
 
 #### Reflexive Pronouns
+
+**Definition**: pronouns showing that the action in a sentence affects the person or thing that does the action (Longman Online Dictionary).
 
 ```cqp
 PronounMyself = [pos="PPX1" & word="myself"%c];
@@ -210,6 +224,8 @@ PronounReflexiveIndefinite = [pos="PNX1(\d1)?"];
 
 ### Determiners
 
+**Definition**: closed-class items which occur before the noun acting as head of the noun phrase (or before its premodifiers) (Quirk et al. 2010, 253).
+
 TODO: split these up further?
 
 ```cqp
@@ -233,6 +249,8 @@ OtherDeterminers = [pos="DD[12]?" & word!="this|these|that|those"%c];
 ```
 
 ### Demonstratives
+
+**Definition**: determiners of singular count nouns and singular noncount nouns ('this' and 'that') and determiners of plural count nouns ('these and those') (Quirk et al. 2010, 257).
 
 **Query**:
 
@@ -337,6 +355,7 @@ set PostpositiveAdjectives5 match matchend;
 
 ### Prepositions
 
+**Definition**: a preposition expresses a relation between two entities, one being that represented by the prepositional complement, the other by another part of the sentence. The prepositional complement is characteristically a noun phrase, a nominal wh-clause, or a nominal -ing clause (Quirk et al. 2010, 657).
 **Query**: based on part-of-speech
 
 ```cqp
@@ -367,6 +386,7 @@ FiniteVerbs = [pos="V.[^ING].?" | pos="VMK?"];
 
 #### Past Verbs
 
+**Definition**: verbs that occur as a finite form in the past tense (Quirk et al. 2010, 97).
 **Query**: past tense verbs plus *used to*
 
 - also counts *used to* not tagged as a modal when preceded by a noun or pronoun
@@ -379,6 +399,7 @@ PastVerbs = [pos="V.D.?" | (pos="VMK" & word="used"%c)] | [pos="[NP].+" | word="
 
 #### Future Constructions
 
+**Definition**: future time is rendered by means of modal auxiliaries, semi-auxiliaries, or by the simple present or present progressive forms (Quirk et al. 2010, 213).
 **Query**:
 
 - will: a form of *will* as a verb followed by an infinitive with optional negation and adverbs in-between
@@ -406,6 +427,7 @@ AboutToFutures = [pos="VB.+"] [pos="XX"]? [pos="RR.*"]* "about"%c [pos="TO"] [po
 
 ### Modal Verbs
 
+**Definition**: verbs that express permission, obligation, and volition as well as possibility, necessity, and prediction (Quirk et al. 2010, 219). 
 **Query**: *can*, *would*, *could*, *should*, *may*, *must*, *might* (plus contractions and excluding will)
 
 TODO: have to, be able to, be allowed to, etc.
@@ -419,6 +441,7 @@ ModalVerbs = [pos="VM" & word!="will|'ll|wo|shall|sha"%c];
 
 ### To-Infinitives
 
+**Definition**: constructions in which the infinitive marker 'to' is followed by the infinitive form of a verb (Quirk et al. 2010, 97).
 **Query**: the word *to* followed by an infinitive (with optional adverbs in-between).
 
 ```cqp
@@ -428,6 +451,8 @@ set ToInfinitives match matchend;
 ```
 
 ### Passives
+
+**Definition**: a form of the verb 'be' (or 'get' in informal contexts) followed by a past participle (optionally followed by a by-phrase introducing the agent) (Quirk et al. 2010, 159).
 
 TODO: disambiguate predicative adjectives
 TODO: bare (i.e. verbless) passives
@@ -474,6 +499,10 @@ TODO: perfect and progressive aspect
 
 ### Coordination and Subordination
 
+**Definition**:
+- coordination: according to the principle of indefinite extensibility, two or more units of the same status on the grammatical hierarchy may constitute a single unit of the same kind. It is typically signalled by a link word, so-called coordinating conjunction (Quirk et al. 2010, 46).
+- subordination: one clause is made a constituent of another clause, i.e. clauses which are embedded in other clauses. Subordinate clauses are often introduced by a subordinating conjunction (Quirk et al. 2010, 44).
+
 ```cqp
 CoordinatingConjunctions = [pos="CCB?"];
 /feature_count[CoordinatingConjunctions];
@@ -484,6 +513,7 @@ SubordinatingConjunctions = [pos="CS[ANTW]?"];
 
 ### Interrogatives
 
+**Definition**: questions which are formally marked in one of to ways: (I) yes-no interrogatives: the operator is placed in front of the subject or (II) wh-interrogatives: the interrogative wh-element is positioned initially (Quirk et al. 2010, 803).
 **Query**:
 
 1. question marks
@@ -507,6 +537,7 @@ TagQuestions = [pos="V[BDH][^GIN][RZ]?" | pos="VM"] [pos="XX" & word="n't"] [pos
 
 ### Imperatives
 
+**Definition**: sentences which normally have no subject, but either a main verb in the base form or (less commonly) an auxiliary in the base form followed by the appropriate form of the main verb (Quirk et al. 2010, 827). 
 **Query**:
 
 1. positive imperatives
@@ -536,6 +567,7 @@ LetImperatives = [pos="VM21"] [pos="VM22"] [pos="RR.*"]* [pos="V.I.?"] within s 
 
 ### Titles
 
+**Definition**: words ascribing role, task, or status.
 **Query**:
 
 1. titles following a noun (e.g., M.A.)
@@ -556,6 +588,8 @@ FixedExpressions = "your"%c "honors?"%c | "my"%c "lords?|lad(y|ies)"%c;
 ```
 
 ### Greetings
+
+**Definition**: polite expressions usually occurring at the start and end of an interaction.
 
 #### Salutations
 
@@ -627,6 +661,8 @@ Valedictions2 = <s> "best|cheers|yours|cordially|respectfully|warmly|regards|sin
 
 ### Adverbs
 
+**Definition**: the adverb functions as the head of an adverb phrase and can take the syntactic function of an adverbial or premodifier of adjective and adverb (Quirk et al. 2010, 439-440). 
+
 TODO: handle phrasal verbs (e.g., "throw away")
 
 ```cqp
@@ -649,11 +685,15 @@ set TimeMetaphors match matchend;
 
 ## Themes
 
+The system of Theme belongs to the textual metafunction of the language. It is concerned with the organization of information within individual clauses and, through this, with the organization of the larger text (Martin, Matthiessen, and Painter 1997, 21). Theme refers to the anchor of the clause and is (in English) located at the beginning of the clause whereas rheme refers to the rest of the clause (Bartlett 2014, 132). Technically, thematic elements are located in sentence-initial position and indicate the local context of clause as a piece of text. Incomplete sentences, e.g., headings, are not annotated for theme, since these sentences contain only rheme (Halliday and Matthiessen 2014, chap. 4.6.2).
+
 TODO: consider multiple themes?
 
 ### Textual
 
 #### Continuatives
+
+**Definition**: located in sentence-initial position and indicate a relationship to previous discourse (Martin, Matthiessen, and Painter 1997, 26).
 
 ```cqp
 InitialContinuatives = <s> [word="\p{P}"]? ([pos="UH" | word="yes|well|oh|now|please"%c] | "no"%c [: word!="matter"%c & pos!="[J|N].+" :]) within s;
@@ -661,6 +701,8 @@ InitialContinuatives = <s> [word="\p{P}"]? ([pos="UH" | word="yes|well|oh|now|pl
 ```
 
 #### Conjunctions
+
+**Definition**: located in sentence-initial position and link two clauses in a coordinating relation or mark one clause as dependent on another (Martin, Matthiessen, and Painter 1997, 25).
 
 ```cqp
 define $ParatacticWords = "for and nor but or yet either neither"; # fanboys plus (n)either
@@ -671,6 +713,8 @@ InitialSubordinators = <s> [word="\p{P}"]? [pos="CS[ANTW]?" & word!="that"%c] wi
 ```
 
 ##### Conjunctive Adjuncts
+
+**Definition**: located in sentence-initial position and provide a cohesive link back to previous discourse (Martin, Matthiessen, and Painter 1997, 25).
 
 Halliday & Matthiessen (2014: Table 3-4)
 
@@ -684,6 +728,8 @@ InitialConjunctiveAdjunctMWUs = <s> [word="\p{P}"]? /mwu_conjunctiveadjuncts[] w
 
 ##### Ordinal Numbers
 
+**Definition**: text-structuring enumerations in sentence-initial position (Martin, Matthiessen, and Painter 1997, 25).
+
 ```cqp
 InitialNumbers = <s> [word="\p{P}"]? [word="\d+"] [word="\p{P}"] within s;
 /feature[InitialNumbers];
@@ -692,6 +738,8 @@ InitialNumbers = <s> [word="\p{P}"]? [word="\d+"] [word="\p{P}"] within s;
 ### Interpersonal
 
 #### Modal Adjuncts
+
+**Definition**: typically realized by an adverb in sentence-initial position; provide the speaker’s comment, assessment or attitude towards the message (adverbs expressing modality or stance) (Martin, Matthiessen, and Painter 1997, 25).
 
 Halliday & Matthiessen (2014: Table 3-5)
 
@@ -705,6 +753,8 @@ InitialModalAdjunctMWUs = <s> [word="\p{P}"]? /mwu_modaladjuncts[] within s;
 
 #### Finite Verbs
 
+**Definition**: finite forms of the verb occurring in the sentence-initial position (Martin, Matthiessen, and Painter 1997, 25).
+
 TODO: separate positive imperatives (experiential) from negatives imperatives and yes-no questions (interpersonal)
 
 ```cqp
@@ -715,6 +765,8 @@ InitialFiniteVerbs = <s> [pos="V.[^ING].?"  | pos="VMK?"] within s;
 ### Other
 
 #### Nonfinite Clauses
+
+**Definition**: a clause whose verb element is non-finite. They lack tense markers and modal auxiliaries and frequently lack a subject and a subordinating conjunction (Quirk et al. 2010, 995).
 
 TODO: disambiguate experiential, interpersonal, and textual uses
 
@@ -727,9 +779,13 @@ InitialParticiples = <s> [word="\p{P}"]? [pos="V.[GN].?"] within s expand to s;
 
 ## Transitivity
 
+Transitivity nelongs to the experiential metafunction and is the overall grammatical resource for construing goings on (Martin, Matthiessen, and Painter 1997, 100). Transitivity encompasses the grammatical system by which we exchange information at the clause level. Central elements that are being taken into account in transitivity analysis are process, participants, and circumstances.
+
 TODO: improve wordlists
 
 ### Existential Processes
+
+**Definition**: resemble relational processes in that they construe a participant involved in a process of being. Prototypically, the Existent is introduced with 'There' followed by a form of be (Martin, Matthiessen and Painter 1997, 109). 
 
 Halliday & Matthiessen (2014: Table 5-26)
 
@@ -753,6 +809,8 @@ set ExistentialTheres matchend target;
 
 ### Relational Processes
 
+**Definition**: construe being in two different modes – attribution and identification (Martin, Matthiessen and Painter 1997, 106).
+
 Halliday & Matthiessen (2014: Table 5-20, 5-21)
 
 ```cqp
@@ -771,6 +829,8 @@ RelationalWords = [pos="V.+" & word=RE($RelationalWords)%c];
 
 ### Verbal Processes
 
+**Definition**: represent processes of ‘saying’, including the different modes of saying (asking, commanding, offering, stating) as well as semiotic processes that are not necessarily verbal (showing, indicating) (Martin, Matthiessen and Painter 1997, 108).
+
 Halliday & Matthiessen (2014: 5-25)
 
 TODO: add query for *be like*
@@ -784,6 +844,8 @@ VerbalProcesses = [pos="V.+" & word=RE($VerbalWords)];
 
 ### Mental Processes
 
+**Definition**: construe a person involved in conscious processing, including processes of perception, cognition and affection (Martin, Matthiessen and Painter 1997, 105).
+
 Halliday & Matthiessen (2014: Table 5-10)
 
 ```cqp
@@ -793,6 +855,8 @@ MentalProcesses = [pos="V.+" & word=RE($MentalWords)];
 ```
 
 ### Material Processes
+
+**Definition**: processes that construe doings and happenings (Martin, Matthiesen and Painter 1997, 103).
 
 Halliday & Matthiessen (2014: Table 5-5)
 
