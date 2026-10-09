@@ -62,6 +62,11 @@ Corpus;
 
 ### Noun-based features
 
+```cqp
+AllNouns = [pos="N.+"];
+/feature_count[AllNouns];
+```
+
 #### Common Nouns
 
 **Definition**: include nouns that denote individual countable entities (count nouns) like 'book' as well as nouns that denote an undifferentiated mass or continuum (noncount nouns) like 'furniture' (Quirk et al. 2010, 246).
@@ -275,7 +280,7 @@ Cases (Quirk et al. 2010: 418):
 3. Predicative: "This information is *useful*."
 
 ```cqp
-AllAdjectives = [pos="J.+"];
+AllAdjectives = [pos="J.+|M.+"];
 /feature_count[AllAdjectives];
 ```
 
@@ -666,6 +671,9 @@ Valedictions2 = <s> "best|cheers|yours|cordially|respectfully|warmly|regards|sin
 TODO: handle phrasal verbs (e.g., "throw away")
 
 ```cqp
+AllAdverbs = [pos="R.+"];
+/feature_count[AllAdverbs];
+
 define $SpaceWords < "wordlists/adverbs/SpaceWords.txt";
 RLs = [: word!="look(s|ing|ed)?"%c :] [pos="RL(\d1)?" & word!="together|downstream" %c] within s;
 SpaceWords = [pos="R[^P].+" & word=RE($SpaceWords)%c];
