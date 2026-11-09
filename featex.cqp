@@ -111,122 +111,6 @@ NeoclassicalCompounds = [pos!="NP" & word=RE($NeoclassicalAffixes)%c & word!=RE(
 /feature[NeoclassicalCompounds];
 ```
 
-### Pronouns
-
-**Definition**: pronouns comprise a varied class of closed-class words with nominal function. By ‘nominal’ here we mean ‘noun-like’ or ‘like a noun phrase’. They may (A) substitute for some word or phrase, (B) signal, as personal pronouns do, that reference is being made to something which is given or known within the linguistic or situational context, or (C) stand for a very general concept, so that its reference includes the reference of untold more specific noun phrases (Quirk et al. 2010, 335).
-
-```cqp
-AllPronouns = [pos="A?P.+"];
-/feature_count[AllPronouns];
-```
-
-#### Personal Pronouns
-
-**Definition**: pronouns that have either a determinative function (my, our, etc.) or an independent function as a noun phrase (mine, ours, etc.) (Quirk et al. 2010, 361).
-
-TODO: differentiate subjective and objective *you*/*it*
-
-```cqp
-# special case for lowercase `I`, which CLAWS consistently mistakes for ZZ1 and MC1
-PronounI = [(pos="PPIS1" & word="I"%c) | word="I"%c];
-PronounWe = [pos="PPIS2" & word="we"%c];
-
-/feature_count[PronounI];
-/feature_count[PronounWe];
-
-PronounMe = [pos="PPIO1" & word="me"%c];
-PronounUs = [pos="PPIO2" & word="us"%c];
-
-/feature_count[PronounMe];
-/feature_count[PronounUs];
-
-PronounYou = [pos="PPY"];
-/feature_count[PronounYou];
-
-PronounHe = [pos="PPHS1" & word="he"%c];
-PronounShe = [pos="PPHS1" & word="she"%c];
-PronounIt = [word="it"%c];
-PronounThey = [pos="PPHS2"];
-
-/feature_count[PronounHe];
-/feature_count[PronounShe];
-/feature_count[PronounIt];
-/feature_count[PronounThey];
-
-PronounHim = [pos="PPHO1" & word="him"%c];
-PronounHer = [pos="PPHO1" & word="her"%c];
-PronounThem = [pos="PPHO2"];
-
-/feature_count[PronounHim];
-/feature_count[PronounHer];
-/feature_count[PronounThem];
-
-PronounIndefiniteNeutral = [pos="PN(\d1)?"];
-/feature_count[PronounIndefiniteNeutral];
-
-PronounIndefiniteSingular = [pos="PN1"];
-/feature_count[PronounIndefiniteSingular];
-```
-
-#### Possessive Pronouns
-
-**Definition**: pronouns that have either a determinative function (my, our, etc.) or an independent function as a noun phrase (mine, ours, etc.) (Quirk et al. 2010, 361)
-
-TODO: *its* is never tagged as PPGE
-
-```cqp
-PronounMine = [pos="PPGE" & word="mine"%c];
-PronounOurs = [pos="PPGE" & word="ours"%c];
-
-/feature_count[PronounMine];
-/feature_count[PronounOurs];
-
-PronounYours = [pos="PPGE" & word="yours"%c];
-
-/feature_count[PronounYours];
-
-PronounHis = [pos="PPGE" & word="his"%c];
-PronounHers = [pos="PPGE" & word="hers"%c];
-PronounIts = [pos="PPGE" & word="its"%c];
-PronounTheirs = [pos="PPGE" & word="theirs"%c];
-
-/feature_count[PronounHis];
-/feature_count[PronounHers];
-/feature_count[PronounIts];
-/feature_count[PronounTheirs];
-```
-
-#### Reflexive Pronouns
-
-**Definition**: pronouns showing that the action in a sentence affects the person or thing that does the action (Longman Online Dictionary).
-
-```cqp
-PronounMyself = [pos="PPX1" & word="myself"%c];
-PronounOurselves = [pos="PPX2" & word="ourselves"%c];
-
-/feature_count[PronounMyself];
-/feature_count[PronounOurselves];
-
-PronounYourself = [pos="PPX1" & word="yourself"%c];
-PronounYourselves = [pos="PPX2" & word="yourselves"%c];
-
-/feature_count[PronounYourself];
-/feature_count[PronounYourselves];
-
-PronounHimself = [pos="PPX1" & word="himself"%c];
-PronounHerself = [pos="PPX1" & word="herself"%c];
-PronounItself = [pos="PPX1" & word="itself"%c];
-PronounThemselves = [pos="PPX2" & word="themselves"%c];
-
-/feature_count[PronounHimself];
-/feature_count[PronounHerself];
-/feature_count[PronounItself];
-/feature_count[PronounThemselves];
-
-PronounReflexiveIndefinite = [pos="PNX1(\d1)?"];
-/feature_count[PronounReflexiveIndefinite];
-```
-
 ### Determiners
 
 **Definition**: closed-class items which occur before the noun acting as head of the noun phrase (or before its premodifiers) (Quirk et al. 2010, 253).
@@ -269,6 +153,120 @@ DemonstrativeDeterminers = [pos="DD[12]" & word="this|these|that|those"%c] np:[:
 
 /diff[DemonstrativePronouns, Demonstratives, DemonstrativeDeterminers];
 /feature[DemonstrativePronouns];
+```
+
+### Pronouns
+
+**Definition**: pronouns comprise a varied class of closed-class words with nominal function. By ‘nominal’ here we mean ‘noun-like’ or ‘like a noun phrase’. They may (A) substitute for some word or phrase, (B) signal, as personal pronouns do, that reference is being made to something which is given or known within the linguistic or situational context, or (C) stand for a very general concept, so that its reference includes the reference of untold more specific noun phrases (Quirk et al. 2010, 335).
+
+```cqp
+AllPronouns = [pos="A?P.+"];
+/union[AllPronouns, AllPronouns, DemonstrativePronouns];
+/feature_count[AllPronouns];
+```
+
+#### Personal Pronouns
+
+**Definition**: pronouns that have either a determinative function (my, our, etc.) or an independent function as a noun phrase (mine, ours, etc.) (Quirk et al. 2010, 361).
+
+TODO: differentiate subjective and objective *you*/*it*
+
+```cqp
+PronounI = [word="I"%c];
+PronounWe = [word="we"%c];
+
+/feature_count[PronounI];
+/feature_count[PronounWe];
+
+PronounMe = [word="me"%c];
+PronounUs = [word="us"%c];
+
+/feature_count[PronounMe];
+/feature_count[PronounUs];
+
+PronounYou = [pos="PPY"];
+/feature_count[PronounYou];
+
+PronounHe = [word="he"%c];
+PronounShe = [word="she"%c];
+PronounIt = [word="it"%c];
+PronounThey = [pos="PPHS2"];
+
+/feature_count[PronounHe];
+/feature_count[PronounShe];
+/feature_count[PronounIt];
+/feature_count[PronounThey];
+
+PronounHim = [word="him"%c];
+PronounHer = [word="her"%c];
+PronounThem = [word="them"%c];
+
+/feature_count[PronounHim];
+/feature_count[PronounHer];
+/feature_count[PronounThem];
+
+PronounIndefiniteNeutral = [pos="PN(\d1)?"];
+/feature_count[PronounIndefiniteNeutral];
+
+PronounIndefiniteSingular = [pos="PN1"];
+/feature_count[PronounIndefiniteSingular];
+```
+
+#### Possessive Pronouns
+
+**Definition**: pronouns that have either a determinative function (my, our, etc.) or an independent function as a noun phrase (mine, ours, etc.) (Quirk et al. 2010, 361)
+
+```cqp
+PronounMine = [word="mine"%c];
+PronounOurs = [word="ours"%c];
+
+/feature_count[PronounMine];
+/feature_count[PronounOurs];
+
+PronounYours = [word="yours"%c];
+
+/feature_count[PronounYours];
+
+PronounHis = [word="his"%c];
+PronounHers = [word="hers"%c];
+PronounIts = [word="its"%c];
+PronounTheirs = [word="theirs"%c];
+
+/feature_count[PronounHis];
+/feature_count[PronounHers];
+/feature_count[PronounIts];
+/feature_count[PronounTheirs];
+```
+
+#### Reflexive Pronouns
+
+**Definition**: pronouns showing that the action in a sentence affects the person or thing that does the action (Longman Online Dictionary).
+
+```cqp
+PronounMyself = [word="myself"%c];
+PronounOurselves = [word="ourselves"%c];
+
+/feature_count[PronounMyself];
+/feature_count[PronounOurselves];
+
+PronounYourself = [word="yourself"%c];
+PronounYourselves = [word="yourselves"%c];
+
+/feature_count[PronounYourself];
+/feature_count[PronounYourselves];
+
+PronounHimself = [word="himself"%c];
+PronounHerself = [word="herself"%c];
+PronounItself = [word="itself"%c];
+PronounThemselves = [word="themselves"%c];
+
+/feature_count[PronounHimself];
+/feature_count[PronounHerself];
+/feature_count[PronounItself];
+/feature_count[PronounThemselves];
+
+PronounReflexiveIndefinite = [pos="PNX1(\d1)?"];
+/feature_count[PronounReflexiveIndefinite];
 ```
 
 ### Adjectives
@@ -385,20 +383,17 @@ AllVerbs = [pos="V.+"];
 For normalization of other verb features.
 
 ```cqp
-FiniteVerbs = [pos="V.[^ING].?" | pos="VMK?"];
+FiniteVerbs = [pos="V.[^ING].?" | pos="VMK?|VVGK"];
 /feature[FiniteVerbs];
 ```
 
 #### Past Verbs
 
 **Definition**: verbs that occur as a finite form in the past tense (Quirk et al. 2010, 97).
-**Query**: past tense verbs plus *used to*
-
-- also counts *used to* not tagged as a modal when preceded by a noun or pronoun
-- includes *I* explicitly because CLAWS tags it incorrectly when not capitalized
+**Query**: past tense verbs plus *used (to)*
 
 ```cqp
-PastVerbs = [pos="V.D.?" | (pos="VMK" & word="used"%c)] | [pos="[NP].+" | word="I"%c] "used"%c "to"%c within s;
+PastVerbs = [pos="V.D.?" | (pos="VMK" & word="used"%c)] within s;
 /feature[PastVerbs];
 ```
 
@@ -410,7 +405,8 @@ PastVerbs = [pos="V.D.?" | (pos="VMK" & word="used"%c)] | [pos="[NP].+" | word="
 - will: a form of *will* as a verb followed by an infinitive with optional negation and adverbs in-between
 - going-to:
     1. a form of *be* followed by optional negation and adverbs, the phrase *going to*, and an infinitive
-    2. the contractions *gonna* and *I'mma* (plus variations) and an infinitive
+       (excluding instances starting with *will* to avoid counting them twice)
+    2. the contraction *I'mma* (plus variations) and an infinitive
 - about-to: a form of *be* followed by optional negation and adverbs, the phrase *about to*, and an infinitive
 
 TODO: is-to futures? (may be too ambiguous)
@@ -421,8 +417,16 @@ TODO: is-to futures? (may be too ambiguous)
 WillFutures = [pos="V.+" & word="will|'ll|wo|shall|sha"%c] [pos="XX"]? [pos="RR.*"]* [pos="V.I"] within s;
 /feature[WillFutures];
 
-GoingToFutures1 = [pos="VB.+"] [pos="XX"]? [pos="RR.*"]* [word="going" | pos="VVGK"] [pos="TO"] [pos="V.I"] within s;
-GoingToFutures2 = [word="I'?mm?a"%c | word="gonna"%c] [pos="V.I"];
+GoingToFutures1 = MU(
+    meet ( # exclude hits preceded by *will*
+        meet ( # bigram *going* + *TO*
+            meet [pos="VVGK"] [pos="TO"] 1 1
+        ) [pos="V.I"] 2 2 # infinitive
+    ) not [word="will|'ll|wo|shall|sha"%c] -5 -1
+);
+# construct proper span since the MU query above only returns "going"
+set GoingToFutures1 matchend nearest [pos="V.I"] within right s from matchend;
+GoingToFutures2 = [word="I'?mm?a"%c] [pos="V.I"];
 /union[GoingToFutures, GoingToFutures1, GoingToFutures2];
 /feature[GoingToFutures];
 
@@ -450,7 +454,7 @@ ModalVerbs = [pos="VM" & word!="will|'ll|wo|shall|sha"%c];
 **Query**: the word *to* followed by an infinitive (with optional adverbs in-between).
 
 ```cqp
-ToInfinitives = [pos="TO" | word="to" %c] [pos="RR.*"]* [pos="V.I"] within s;
+ToInfinitives = [pos="TO"] [pos="RR.*"]* [pos="V.I"] within s;
 set ToInfinitives match matchend;
 /feature[ToInfinitives];
 ```
@@ -477,7 +481,7 @@ set NonModalPassives match matchend;
 # modal + (not + adverbs)? have been (being)? + past participle
 ModalPassives = (
     [pos="VM"] [pos="XX"]? [pos="R.*"]*
-    ([pos="VBI"] [pos="R.*"]* | [pos="VH0"] [pos="R.*"]* [pos="VBN"])
+    ([pos="VBI"] [pos="R.*"]* | [pos="VH.+"] [pos="R.*"]* [pos="VBN"])
     [pos="VBG"]? [pos="V.N.?"]
 ) within s;
 set ModalPassives match matchend;
@@ -487,7 +491,7 @@ ToPassives = [pos="TO"] [pos="VBI"] [pos="V.N.?"] within s;
 set ToPassives match matchend;
 
 # get + past participle
-GetPassives = [word="get(s|ting)?|got(ten)?"] ([pos="AT1?"]? [pos="N.+"] | [pos="P.+"])? [pos="R.*"]* [pos="V.N.?"] within s;
+GetPassives = [word="get(s|ting)?|got(ten)?"%c & pos="V.+"] ([pos="AT1?"]? [pos="N.+"] | [pos="P.+"])? [pos="R.*"]* [pos="V.N.?"] within s;
 set GetPassives match matchend;
 
 /union[
@@ -675,7 +679,7 @@ AllAdverbs = [pos="R.+"];
 /feature_count[AllAdverbs];
 
 define $SpaceWords < "wordlists/adverbs/SpaceWords.txt";
-RLs = [: word!="look(s|ing|ed)?"%c :] [pos="RL(\d1)?" & word!="together|downstream" %c] within s;
+RLs = [: word!="look(s|ing|ed)?"%c :] [pos="RL(\d1)?" & word!="together|downstream"%c] within s;
 SpaceWords = [pos="R[^P].+" & word=RE($SpaceWords)%c];
 
 /union[SpaceAdverbs, RLs, SpaceWords];
@@ -684,7 +688,7 @@ SpaceWords = [pos="R[^P].+" & word=RE($SpaceWords)%c];
 define $TimeWords < "wordlists/adverbs/TimeWords.txt";
 RTs = [pos="RT(\d1)?"]; # only count ditto tags once
 TimeWords = [pos="R[^P].+" & word=RE($TimeWords)%c];
-TimeMetaphors = [word="look(s|ing|ed)?" %c] [word="forward|back(ward)?" %c] within s;
+TimeMetaphors = [word="look(s|ing|ed)?"%c] [word="forward|back(ward)?"%c & pos="R.+"] within s;
 set TimeMetaphors match matchend;
 
 /union[TimeAdverbs, RTs, TimeWords, TimeMetaphors];
@@ -708,19 +712,7 @@ InitialContinuatives = <s> [word="\p{P}"]? ([pos="UH" | word="yes|well|oh|now|pl
 /feature[InitialContinuatives];
 ```
 
-#### Conjunctions
-
-**Definition**: located in sentence-initial position and link two clauses in a coordinating relation or mark one clause as dependent on another (Martin, Matthiessen, and Painter 1997, 25).
-
-```cqp
-define $ParatacticWords = "for and nor but or yet either neither"; # fanboys plus (n)either
-InitialCoordinators = <s> ([word="\p{P}"]? ([pos="CCB?" | word=RE($ParatacticWords)%c | (word="for"%c & pos="CS")] | [word="so"%c] [: pos!="JJ" :])) within s;
-InitialSubordinators = <s> [word="\p{P}"]? [pos="CS[ANTW]?" & word!="that"%c] within s;
-/union[InitialConjunctions, InitialCoordinators, InitialSubordinators];
-/feature[InitialConjunctions];
-```
-
-##### Conjunctive Adjuncts
+#### Conjunctive Adjuncts
 
 **Definition**: located in sentence-initial position and provide a cohesive link back to previous discourse (Martin, Matthiessen, and Painter 1997, 25).
 
@@ -734,7 +726,26 @@ InitialConjunctiveAdjunctMWUs = <s> [word="\p{P}"]? /mwu_conjunctiveadjuncts[] w
 /feature[InitialConjunctiveAdjuncts];
 ```
 
-##### Ordinal Numbers
+#### Conjunctions
+
+**Definition**: located in sentence-initial position and link two clauses in a coordinating relation or mark one clause as dependent on another (Martin, Matthiessen, and Painter 1997, 25).
+
+```cqp
+define $ParatacticWords = "and nor but or yet either neither"; # fanboys plus (n)either ("for" covered separately)
+InitialCoordinators = <s> ([word="\p{P}"]? ([pos="CCB?" | word=RE($ParatacticWords)%c | (word="for"%c & pos="CS")] | [word="so"%c] [: pos!="JJ" :])) within s;
+InitialSubordinators = <s> [word="\p{P}"]? [pos="CS[ANTW]?" & word!="that"%c] within s;
+set InitialCoordinators match matchend;
+set InitialSubordinators match matchend;
+/union[InitialConjunctions, InitialCoordinators, InitialSubordinators];
+
+# hack to exclude conjuncts from hits
+set InitialConjunctiveAdjuncts match leftmost [word!="\p{P}"] within right 1 words from match inclusive;
+set InitialConjunctiveAdjuncts matchend match;
+/diff[InitialConjunctions, InitialConjunctions, InitialConjunctiveAdjuncts];
+/feature[InitialConjunctions];
+```
+
+#### Ordinal Numbers
 
 **Definition**: text-structuring enumerations in sentence-initial position (Martin, Matthiessen, and Painter 1997, 25).
 
@@ -779,7 +790,7 @@ InitialFiniteVerbs = <s> [pos="V.[^ING].?"  | pos="VMK?"] within s;
 TODO: disambiguate experiential, interpersonal, and textual uses
 
 ```cqp
-InitialToInfinitives = <s> [word="\p{P}"]? [pos="TO" | word="to"%c] [pos="R.+"]* [pos="V.I"] within s expand to s;
+InitialToInfinitives = <s> [word="\p{P}"]? [pos="TO"] [pos="R.+"]* [pos="V.I"] within s expand to s;
 InitialParticiples = <s> [word="\p{P}"]? [pos="V.[GN].?"] within s expand to s;
 /union[InitialNonFinites, InitialToInfinitives, InitialParticiples];
 /feature[InitialNonFinites];
@@ -803,7 +814,7 @@ Uses some matching hacks for extracting the verb instead of *there*.
 
 ```cqp
 define $ExistentialWords < "wordlists/process_types/ExistentialWords.txt";
-ExistentialWords = TAB [word="there"%c] * [word=RE($ExistentialWords)%c] within s;
+ExistentialWords = TAB [word="there"%c] * [word=RE($ExistentialWords)%c & pos="V.+"] within s;
 set ExistentialWords match matchend;
 
 ExistentialPos = TAB [pos="EX"] * [pos="V.+"] within s;
