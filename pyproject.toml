@@ -1,7 +1,9 @@
 [project]
 name = "featex"
-version = "1.0.2"
+version = "1.1.0"
 description = "Feature extraction script"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "numpy>=2.2.6",
+]

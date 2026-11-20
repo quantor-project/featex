@@ -76,6 +76,28 @@ CommonNouns = [pos="NN[ABLOTU]?[12]?|ND1"];
 /feature_count[CommonNouns];
 ```
 
+#### Concrete Nouns
+
+**Definition**: nouns denoting entities that can be experienced directly through the senses, as opposed to abstract concepts (Brysbaert et al. 2014).
+**Query**: common nouns in a pre-generated wordlist (default) or those rated above the specified threshold (see README.md for details).
+
+```cqp
+tabulate CommonNouns match, matchend, match word > "concreteness/.spans";
+undump ConcreteNouns < "uv run concreteness/filter_words.py wordlist concreteness/concrete_words.txt < concreteness/.spans; rm -f concreteness/.spans |";
+/feature[ConcreteNouns];
+```
+
+#### Abstract Nouns
+
+**Definition**: nouns denoting concepts and qualities that cannot be experienced directly through the senses, as opposed to concrete entities (Brysbaert et al. 2014).
+**Query**: common nouns in a pre-generated wordlist (default) or those rated below the specified threshold (see README.md for details).
+
+```cqp
+tabulate CommonNouns match, matchend, match word > "concreteness/.spans";
+undump AbstractNouns < "uv run concreteness/filter_words.py wordlist concreteness/abstract_words.txt < concreteness/.spans; rm -f concreteness/.spans |";
+/feature[AbstractNouns];
+```
+
 #### Proper Nouns
 
 **Definition**: Proper nouns are names of specific people (Shakespeare), places (Milwaukee), months (September), days (Thursday), festivals (Christmas), magazines (Vogue), and so forth. They lack articles and are usually written with initial capital letters (Quirk et al. 2010, 288).
